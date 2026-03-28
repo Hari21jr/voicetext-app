@@ -1,10 +1,9 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: `${process.env.INTERNAL_API_URL || "http://api:5000"}/:path*`,
+        destination: "https://voicetext-app-production.up.railway.app/:path*",
       },
     ];
   },
