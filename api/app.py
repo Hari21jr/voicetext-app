@@ -14,7 +14,7 @@ app.secret_key = os.environ.get("SECRET_KEY", "super-secret-key-change-me")
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 
-CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+CORS(app, supports_credentials=True, origins="*")
 
 DATABASE = os.environ.get("DATABASE_URL", "sqlite:///data/app.db").replace("sqlite:///", "")
 
