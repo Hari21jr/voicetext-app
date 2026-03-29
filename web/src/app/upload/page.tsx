@@ -81,7 +81,7 @@ export default function UploadPage() {
     <div className="ml-64 p-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-white mb-2">File Upload</h1>
-        <p className="text-gray-400 mb-8">Upload an audio file and transcribe it with AI.</p>
+        <p className="text-gray-400 mb-8">Upload an audio file and transcribe it to text.</p>
 
         {/* Drop Zone */}
         <div

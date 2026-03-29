@@ -105,7 +105,7 @@ export default function SpeechToTextPage() {
     <div className="ml-64 p-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-white mb-2">Speech to Text</h1>
-        <p className="text-gray-400 mb-8">Record audio from your microphone for AI-powered transcription.</p>
+        <p className="text-gray-400 mb-8">Record audio from your microphone and transcribe it to text.</p>
 
         <div className="card text-center">
           {/* Recording Button */}
