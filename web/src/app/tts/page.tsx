@@ -12,6 +12,9 @@ export default function TextToSpeechPage() {
   const [selectedVoice, setSelectedVoice] = useState("");
   const [rate, setRate] = useState(1);
   const [speaking, setSpeaking] = useState(false);
+  const [fileToAudio, setFileToAudio] = useState<File | null>(null);
+  const [fileError, setFileError] = useState("");
+  const [fileLoading, setFileLoading] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   useEffect(() => {
@@ -133,6 +136,70 @@ export default function TextToSpeechPage() {
             <div className="mt-4 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-sm text-emerald-400 font-medium">Speaking…</span>
+            </div>
+          )}
+        </div>
+
+        {/* Upload File to Audio */}
+        <div className="card mt-6">
+          <h2 className="text-lg font-semibold text-white mb-4">Upload File to Audio</h2>
+
+          <input
+            type="file"
+            accept=".txt,.pdf"
+            onChange={(e) => {
+              setFileToAudio(e.target.files?.[0] || null);
+              setFileError("");
+            }}
+            className="input-field mb-3"
+          />
+
+          {fileToAudio && (
+            <p className="text-sm text-gray-400 mb-4">Selected: {fileToAudio.name}</p>
+          )}
+
+          <button
+            onClick={async () => {
+              if (!fileToAudio) return;
+              setFileLoading(true);
+              setFileError("");
+              try {
+                const formData = new FormData();
+                formData.append("file", fileToAudio);
+                const res = await fetch("/api/tts/generate", {
+                  method: "POST",
+                  credentials: "include",
+                  body: formData,
+                });
+                if (!res.ok) {
+                  const data = await res.json();
+                  throw new Error(data.error || "Generation failed");
+                }
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "speech.mp3";
+                a.click();
+                URL.revokeObjectURL(url);
+              } catch (err: any) {
+                setFileError(err.message || "Something went wrong");
+              } finally {
+                setFileLoading(false);
+              }
+            }}
+            disabled={!fileToAudio || fileLoading}
+            className="btn-primary flex items-center gap-2"
+          >
+            {fileLoading && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            )}
+            {fileLoading ? "Generating…" : "Generate Audio"}
+          </button>
+
+          {fileError && (
+            <div className="mt-4 bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl text-sm">
+              {fileError}
             </div>
           )}
         </div>
