@@ -74,7 +74,7 @@ export default function SpeechToTextPage() {
     formData.append("audio", blob, "recording.webm");
 
     try {
-      const res = await fetch("http://localhost:5000/stt/transcribe", {
+      const res = await fetch("/api/stt/transcribe", {
         method: "POST",
         credentials: "include",
         body: formData,
