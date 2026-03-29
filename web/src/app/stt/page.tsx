@@ -157,12 +157,28 @@ export default function SpeechToTextPage() {
           <div className="card mt-6">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-lg font-semibold text-white">Transcription</h2>
-              <button
-                onClick={() => navigator.clipboard.writeText(transcript)}
-                className="btn-secondary text-sm px-3 py-1.5"
-              >
-                Copy
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => navigator.clipboard.writeText(transcript)}
+                  className="btn-secondary text-sm px-3 py-1.5"
+                >
+                  Copy
+                </button>
+                <button
+                  onClick={() => {
+                    const blob = new Blob([transcript], { type: "text/plain" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "transcript.txt";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="btn-secondary text-sm px-3 py-1.5"
+                >
+                  Download .txt
+                </button>
+              </div>
             </div>
             <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{transcript}</p>
           </div>
