@@ -43,7 +43,7 @@ export default function UploadPage() {
     formData.append("audio", file);
 
     try {
-      const res = await fetch("http://localhost:5000/stt/transcribe", {
+      const res = await fetch("/api/stt/transcribe", {
         method: "POST",
         credentials: "include",
         body: formData,
