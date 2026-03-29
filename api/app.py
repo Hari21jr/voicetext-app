@@ -4,10 +4,14 @@ import uuid
 import tempfile
 from functools import wraps
 
-from flask import Flask, request, jsonify, session, g
+from io import BytesIO
+
+from flask import Flask, request, jsonify, session, g, send_file
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from groq import Groq
+from gtts import gTTS
+from pypdf import PdfReader
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "super-secret-key-change-me")
@@ -256,6 +260,37 @@ def get_shared(share_id):
     if not item:
         return jsonify({"error": "Not found"}), 404
     return jsonify(dict(item))
+
+
+# ── Text-to-Speech ────────────────────────────────────────────────────────────
+
+@app.route("/tts/generate", methods=["POST"])
+def tts_generate():
+    if "file" not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+
+    uploaded = request.files["file"]
+    filename = uploaded.filename or ""
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+
+    if ext == "txt":
+        text = uploaded.read().decode("utf-8", errors="replace")
+    elif ext == "pdf":
+        reader = PdfReader(uploaded)
+        text = "\n".join(page.extract_text() or "" for page in reader.pages)
+    else:
+        return jsonify({"error": "Unsupported file type. Upload a .txt or .pdf file."}), 400
+
+    text = text.strip()
+    if not text:
+        return jsonify({"error": "The file contains no text."}), 400
+
+    buf = BytesIO()
+    tts = gTTS(text=text)
+    tts.write_to_fp(buf)
+    buf.seek(0)
+
+    return send_file(buf, mimetype="audio/mpeg", as_attachment=True, download_name="speech.mp3")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
